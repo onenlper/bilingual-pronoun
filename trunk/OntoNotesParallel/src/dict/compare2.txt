@@ -1,0 +1,39 @@
+	public List<FeatureNode> getFeatureNodes(PairInstance instance, Document d) {
+		int offset = 0;
+		List<FeatureNode> fns = new ArrayList<FeatureNode>();
+
+		for (IFeature f : features) {
+			if (f.getLang().equals("eng")) {
+				if (d.lang.equals(f.getLang())) {
+					f.contributeFeatureNodes(instance, offset, fns, d);
+				} else {
+					Span xAnt = instance.ant.getXSpan();
+					Span xAna = instance.ana.getXSpan();
+					if (xAnt != null && xAna != null) {
+						Document xD = xAnt.s.d;
+						PairInstance xpi = new PairInstance(xAnt, xAna,
+								instance.mentionDist, instance.nesBetween);
+						f.contributeFeatureNodes(xpi, offset, fns, xD);
+					}
+				}
+				offset += f.size();
+			} else {
+				if (f.getLang().equals("chi")) {
+					if (d.lang.equals(f.getLang())) {
+						f.contributeFeatureNodes(instance, offset, fns, d);
+					} else {
+						Span xAnt = instance.ant.getXSpan();
+						Span xAna = instance.ana.getXSpan();
+						if (xAnt != null && xAna != null) {
+							Document xD = xAnt.s.d;
+							PairInstance xpi = new PairInstance(xAnt, xAna,
+									instance.mentionDist, instance.nesBetween);
+							f.contributeFeatureNodes(xpi, offset, fns, xD);
+						}
+					}
+					offset += f.size();
+				}
+			}
+		}
+		return fns;
+	}

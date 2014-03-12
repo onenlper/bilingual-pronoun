@@ -1,0 +1,50 @@
+public List<FeatureNode> getFeatureNodes(PairInstance instance, Document d, List<String[]> feas) {
+		int offset = 0;
+		List<FeatureNode> fns = new ArrayList<FeatureNode>();
+		
+		feas.clear();
+		int lastSize = 0;
+		for (IFeature f : features) {
+			if (f.getLang().equals("eng")) {
+				if (d.lang.equals(f.getLang())) {
+					f.contributeFeatureNodes(instance, offset, fns, d);
+				} else {
+					Span xAnt = instance.ant.getXSpan();
+					Span xAna = instance.ana.getXSpan();
+					if (xAnt != null && xAna != null) {
+						Document xD = xAnt.s.d;
+						PairInstance xpi = new PairInstance(xAnt, xAna,
+								instance.mentionDist, instance.nesBetween);
+						f.contributeFeatureNodes(xpi, offset, fns, xD);
+					}
+				}
+				offset += f.size();
+			} else {
+				if (f.getLang().equals("chi")) {
+					if (d.lang.equals(f.getLang())) {
+						f.contributeFeatureNodes(instance, offset, fns, d);
+					} else {
+						Span xAnt = instance.ant.getXSpan();
+						Span xAna = instance.ana.getXSpan();
+						if (xAnt != null && xAna != null) {
+							Document xD = xAnt.s.d;
+							PairInstance xpi = new PairInstance(xAnt, xAna,
+									instance.mentionDist, instance.nesBetween);
+							f.contributeFeatureNodes(xpi, offset, fns, xD);
+						}
+					}
+					offset += f.size();
+				}
+			}
+			String[] add = new String[2];
+			add[0] = f.getName();
+			if(fns.size()!=lastSize) {
+				add[1] = Integer.toString(fns.get(fns.size()-1).index);
+			} else {
+				add[1] = "0";
+			}
+			feas.add(add);
+			lastSize = fns.size();
+		}
+		return fns;
+	}
