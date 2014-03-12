@@ -1,0 +1,3 @@
+./train-nostack-joint-spe-dev.sh 4 twoM
+./test-nostack-joint-MT.sh 4 chi
+java evaluate/Evaluate chi close 4
